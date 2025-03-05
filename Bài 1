@@ -1,0 +1,72 @@
+using System;
+
+class Node
+{
+    public int Data;
+    public int Count;
+    public Node Left, Right;
+
+    public Node(int data)
+    {
+        Data = data;
+        Count = 1;
+        Left = Right = null;
+    }
+}
+
+class BinarySearchTree
+{
+    private Node root;
+
+    public void Insert(int data)
+    {
+        root = InsertRec(root, data);
+    }
+
+    private Node InsertRec(Node root, int data)
+    {
+        if (root == null)
+            return new Node(data);
+        
+        if (data < root.Data)
+            root.Left = InsertRec(root.Left, data);
+        else if (data > root.Data)
+            root.Right = InsertRec(root.Right, data);
+        else
+            root.Count++;
+        
+        return root;
+    }
+
+    public void InOrderTraversal()
+    {
+        InOrderRec(root);
+    }
+
+    private void InOrderRec(Node root)
+    {
+        if (root != null)
+        {
+            InOrderRec(root.Left);
+            Console.WriteLine($"{root.Data}: {root.Count} lan");
+            InOrderRec(root.Right);
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        BinarySearchTree bst = new BinarySearchTree();
+        Random rand = new Random();
+        
+        for (int i = 0; i < 10000; i++)
+        {
+            bst.Insert(rand.Next(0, 10));
+        }
+        
+        Console.WriteLine("Cac so trong cay va so lan xuat hien:");
+        bst.InOrderTraversal();
+    }
+}
