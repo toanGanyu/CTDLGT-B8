@@ -1,0 +1,109 @@
+using System;
+using System.Collections.Generic;
+
+class Node
+{
+    public string Value;
+    public Node Left, Right;
+
+    public Node(string value)
+    {
+        Value = value;
+        Left = Right = null;
+    }
+}
+
+class ExpressionTree
+{
+    private Node root;
+
+    public ExpressionTree(string postfix)
+    {
+        root = BuildTree(postfix);
+    }
+
+    private Node BuildTree(string postfix)
+    {
+        Stack<Node> stack = new Stack<Node>();
+        string[] tokens = postfix.Split(' ');
+
+        foreach (var token in tokens)
+        {
+            if (IsOperator(token))
+            {
+                Node node = new Node(token);
+                node.Right = stack.Pop();
+                node.Left = stack.Pop();
+                stack.Push(node);
+            }
+            else
+            {
+                stack.Push(new Node(token));
+            }
+        }
+        return stack.Pop();
+    }
+
+    private bool IsOperator(string token)
+    {
+        return token == "+" || token == "-" || token == "*" || token == "/";
+    }
+
+    public double Evaluate()
+    {
+        return Evaluate(root);
+    }
+
+    private double Evaluate(Node node)
+    {
+        if (node == null) return 0;
+
+        if (!IsOperator(node.Value))
+            return double.Parse(node.Value);
+
+        double leftVal = Evaluate(node.Left);
+        double rightVal = Evaluate(node.Right);
+
+        switch (node.Value)
+        {
+            case "+": return leftVal + rightVal;
+            case "-": return leftVal - rightVal;
+            case "*": return leftVal * rightVal;
+            case "/": return leftVal / rightVal;
+        }
+        return 0;
+    }
+
+    public void InOrderTraversal()
+    {
+        Console.Write("Bieu thuc trung to: ");
+        InOrder(root);
+        Console.WriteLine();
+    }
+
+    private void InOrder(Node node)
+    {
+        if (node != null)
+        {
+            if (IsOperator(node.Value)) Console.Write("( ");
+            InOrder(node.Left);
+            Console.Write($"{node.Value} ");
+            InOrder(node.Right);
+            if (IsOperator(node.Value)) Console.Write(") ");
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Console.Write("Nhap bieu thuc hau to (VD: 2 3 + 4 * 5 /): ");
+        string postfix = Console.ReadLine();
+
+        ExpressionTree tree = new ExpressionTree(postfix);
+
+        tree.InOrderTraversal();
+        Console.WriteLine($"Ket qua tinh toan: {tree.Evaluate()}");
+    }
+}
